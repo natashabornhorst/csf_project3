@@ -1,0 +1,9 @@
+start: LDA count
+    ADD one 
+
+      # comment hi hi ihi 
+   
+    STA count
+    JMP   start
+count: DAT  0
+one: DAT 1
