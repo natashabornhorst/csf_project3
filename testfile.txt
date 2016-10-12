@@ -1,9 +1,9 @@
 start: LDA count
-    ADD one 
+    ADD 700 
 
       # comment hi hi ihi 
    
     STA count
     JMP   start
 count: DAT  0
-one: DAT 1
+one: DAT 450

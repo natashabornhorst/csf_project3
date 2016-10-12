@@ -23,12 +23,9 @@ public class sas {
 
             //first pass:
             while ((line = br.readLine()) != null) {
+  //System.out.println("line: " + line);
                 if (readLine(line) == true) {
                     counter++;
-                }
-                if (counter >= 16) {
-                    System.err.println("Error: You have too many lines. 16 max.");
-                    return;
                 }
             }
             //second pass:
@@ -67,10 +64,8 @@ public class sas {
 
         if (words.size() == 0) {
             return false;
-        } else if (isLabel(words.get(0)) && labels.containsKey(words.get(0))) {
-            System.err.println("Error: Label has already been declared.");
-            return false;
-        } else if (isLabel(words.get(0))) {
+        }
+        else if (isLabel(words.get(0))) {
             String label = words.get(0).substring(0, words.get(0).length()-1);
             labels.put(label, counter);
         }
@@ -98,35 +93,11 @@ public class sas {
         int address;
         if (labels.containsKey(words.get(1))) {
             address = labels.get(words.get(1));
-                      System.out.print(address); 
+            System.out.print(address); 
         } else {
             System.out.print(words.get(1)); 
             String sAddress = words.get(1);
-            try {
-                address = Integer.valueOf(sAddress);
-        
-            } catch(NumberFormatException ex) {
-
-                System.err.println("Error: You used a label that hasn't been declared");
-                return 0;
-
-            }
-   
-
-        }
-        //check number of bits        
-        if (words.get(0).compareTo("DAT") == 0) {
-            //largest is 8 bit
-            if (address > 255) {
-                System.err.println("Error: Largest number of bits for DAT is 8.");
-            }
-   
-        } else {
-            //largest is 4 bit
-            if (address > 15) {
-                System.err.println("Error: Largest number of bits is 4.");
-            }
-
+            address = Integer.valueOf(sAddress);
         }
 
         write(opcode, address);
