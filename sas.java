@@ -9,6 +9,7 @@ public class sas {
     static HashMap<String, Integer> labels = new HashMap<String, Integer>();
     static HashMap<String, Integer> opcodes = new HashMap<String, Integer>();
     static int counter = 0;
+    static int line_counter = 0;
     static ByteArrayOutputStream bout;
     public static void main(String[] args)throws IOException {
         BufferedReader br = null;
@@ -25,6 +26,7 @@ public class sas {
             while ((line = br.readLine()) != null) {
                 if (readLine(line) == true) {
                     counter++;
+                    line_counter++;
                 }
                 if (counter >= 16) {
                     System.err.println("Error: You have too many lines. 16 max.");
@@ -33,9 +35,11 @@ public class sas {
             }
             //second pass:
             counter = 0;
+            line_counter = 0;
             while ((line = br2.readLine()) != null) {
                 readLine2(line);
                 counter++;
+                line_counter++;
             }
             byte b [] = bout.toByteArray();
 
@@ -68,7 +72,7 @@ public class sas {
         if (words.size() == 0) {
             return false;
         } else if (isLabel(words.get(0)) && labels.containsKey(words.get(0))) {
-            System.err.println("Error: Label has already been declared.");
+            System.err.println("Error: Label has already been declared: line " + line_counter);
             return false;
         } else if (isLabel(words.get(0))) {
             String label = words.get(0).substring(0, words.get(0).length()-1);
@@ -92,8 +96,16 @@ public class sas {
         }
 
         //OPCODE
-        int opcode = opcodes.get(words.get(0));
-        System.out.print(opcode);
+        int opcode;
+        if (opcodes.containsKey(words.get(0))) {
+            opcode = opcodes.get(words.get(0));
+            System.out.print(opcode);
+        }
+        else {
+            System.err.println("Error: operation does not exist. Line: " + line_counter);
+            return 0;
+        }
+
         //ADDRESS
         int address;
         if (labels.containsKey(words.get(1))) {
@@ -107,7 +119,7 @@ public class sas {
         
             } catch(NumberFormatException ex) {
 
-                System.err.println("Error: You used a label that hasn't been declared");
+                System.err.println("Error: You used a label that hasn't been declared. Line: " + line_counter);
                 return 0;
 
             }
@@ -118,13 +130,13 @@ public class sas {
         if (words.get(0).compareTo("DAT") == 0) {
             //largest is 8 bit
             if (address > 255) {
-                System.err.println("Error: Largest number of bits for DAT is 8.");
+                System.err.println("Error: Largest number of bits for DAT is 8. Line: " + line_counter);
             }
    
         } else {
             //largest is 4 bit
             if (address > 15) {
-                System.err.println("Error: Largest number of bits is 4.");
+                System.err.println("Error: Largest number of bits is 4. Line: " + line_counter);
             }
 
         }
@@ -139,9 +151,18 @@ public class sas {
 
         String bin1 = Integer.toBinaryString(opcode);
         String bin2 = Integer.toBinaryString(address);
-        bout.write(bin1.getBytes());
-        bout.write(bin2.getBytes());
+        String hex1 = binaryToHex(bin1);
+        String hex2 = binaryToHex(bin2);
+        bout.write(hex1.getBytes());
+        bout.write(hex2.getBytes());
     }
+
+    public static String binaryToHex(String bin) {
+        return String.format("%21X", Long.parseLong(bin,2)) ;
+    }
+
+
+
 
     /** gets rid of spaces and comments. */
     public static ArrayList<String> removeSpaces(String array[], boolean lbls) {
